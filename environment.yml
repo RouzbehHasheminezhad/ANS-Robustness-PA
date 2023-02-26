@@ -1,0 +1,10 @@
+name: ANS
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - graph-tool
+  - python-igraph
+  - tqdm
+  - scikit-learn
+  - pandas
