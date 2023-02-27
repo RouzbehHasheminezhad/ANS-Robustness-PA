@@ -23,12 +23,12 @@ To ease replication, we provide [**here**](https://polybox.ethz.ch/index.php/s/z
 python data.py
 ```
 ### Generating Figures
-The following generates paper's figures, and saves them in `results/figs/`.
+The following creates the directory `results/figs/` and generates the paper's figures there.
 ```
 python figures.py
 ```
 ### Generating Tables
-The following generates the paper's tables, and saves them in `results/tables/`.
+The following creates the directory `results/tables/` and generates the paper's tables there.
 ```
 python figures.py
 ```

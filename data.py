@@ -1,10 +1,12 @@
-import graph_tool.all as gt
 import itertools
+
+import graph_tool.all as gt
 import numpy as np
 from tqdm.contrib.concurrent import process_map
-from engine.utils.generator import *
+
 from engine.utils.io import *
-from engine.utils.network import *
+from engine.utils.network_generator import *
+from engine.utils.robustness_score import *
 
 
 def gen_dir():
@@ -28,7 +30,7 @@ def generate_data():
     set_num_reps(10)
     set_seed(6814)
     set_max_tries(10000000)
-    set_param_list(list(itertools.product([1000], [3])))
+    set_param_list(list(itertools.product([1000, 10000, 20000], [3, 4, 5])))
     set_working_dir(os.getcwd() + "/results/")
     log_initial_parameters()
     gen_dir()
@@ -80,7 +82,8 @@ def generate_data():
 
     set_logger("random_min_deg.log")
     logging.info("The format is: n (number of vertices), m (number of edges), k (minimum degree), seed (random seed)")
-    results = process_map(generate_random_min_deg, args_random_min_deg, max_workers=n_engines, desc="random_min_deg", chunksize=1)
+    results = process_map(generate_random_min_deg, args_random_min_deg, max_workers=n_engines, desc="random_min_deg",
+                          chunksize=1)
     for (exit_code, n, m, k, seed) in results:
         if exit_code == 0:
             logging.info("Finished the generation of: %s", (n, m, k, seed))
@@ -173,4 +176,3 @@ def generate_data():
 
 if __name__ == '__main__':
     generate_data()
-

@@ -1,5 +1,5 @@
 from engine.utils.io import *
-from engine.utils.visualize import experiment, consistency, near_optimal_consistency, adaptive_sensetivity
+from engine.utils.visualization import experiment, consistency, near_optimal_consistency, adaptive_sensetivity
 
 
 def generate_figures():

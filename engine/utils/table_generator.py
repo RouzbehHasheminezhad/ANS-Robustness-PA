@@ -1,5 +1,5 @@
 def get_cluster_score(n, k, beta):
-    from engine.utils.visualize import get_robustness_score
+    from engine.utils.visualization import get_robustness_score
     from sklearn import metrics
     import numpy as np
     types = ["pa", "random", "random_min_deg"]
