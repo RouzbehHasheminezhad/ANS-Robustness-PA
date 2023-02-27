@@ -17,7 +17,7 @@ conda activate ANS
 ```
 ### Generating Data
 The following generates the data and corresponding log files in a `results` directory.\
-Note that this script uses all available CPU cores and may take several hours to complete on a personal computer.\
+Note that this script uses all available CPU cores and may take few hours to complete on a personal computer. \
 To ease replication, we provide [**here**](https://polybox.ethz.ch/index.php/s/zN3q3AORlctQtTq) the `results` folder obtained after this step.
 ```
 python data.py
