@@ -30,7 +30,7 @@ python figures.py
 ### Generating Tables
 The following creates the directory `results/tables/` and generates the paper's tables there.
 ```
-python figures.py
+python tables.py
 ```
 ## Citation
 If you find this repository useful, please consider citing the conference or journal paper.\
