@@ -1,6 +1,7 @@
 import itertools
 import os
 import pickle
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Rectangle
@@ -167,25 +168,29 @@ def consistency(is_centered, alphas, transparency, ref):
     import matplotlib as mpl
     mpl.use('pdf')
     width = 3.487 * 6
-    height = width * 1.15
+    height = width * 1.15 * 1.5
 
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
-    plt.rc('axes', labelsize="x-large")  # fontsize of the x and y labels
-    plt.rc('xtick', labelsize="x-large")  # fontsize of the tick labels
-    plt.rc('ytick', labelsize="x-large")  # fontsize of the tick labels
-    plt.rc('legend', fontsize="x-large")  # legend fontsize
-    plt.rc('figure', titlesize="x-large")
-    plt.rc('legend', fontsize=38)
+    plt.rc('axes', labelsize=60)  # fontsize of the x and y labels
+    plt.rc('xtick', labelsize=100)  # fontsize of the tick labels
+    plt.rc('ytick', labelsize=100)  # fontsize of the tick labels
+    plt.rc('legend', fontsize=60)  # legend fontsize
+    plt.rc('legend', fontsize=60)
 
-    markers = {"random": "^",
-               "random_min_deg": "s",
-               "pa": "o"}
+    markers = {"random_min_deg": "s",
+               "random": "^",
+               "pa": "o"
+               }
     labels = {"random_min_deg": r"$G(n,m,k)$",
               "random": r"$G(n,m)$",
-              "pa": r"$\textsf{PA}(n,k)$"}
+              "pa": r"$\textsf{PA}(n,k)$"
+              }
 
-    f, ax = plt.subplots(3, 2, figsize=(width, height))
+    net_list = list(markers.keys())
+    removal_types = ["static-targeted-attack", "random-failure"]
+
+    f, ax = plt.subplots(6, 2, figsize=(width, height))
     f.subplots_adjust(left=.05, bottom=.12, right=.95, top=.95)
 
     for is_effect_n in [True, False]:
@@ -193,7 +198,7 @@ def consistency(is_centered, alphas, transparency, ref):
             cases = {(20000, 3): {}, (10000, 3): {}, (1000, 3): {}}
         else:
             cases = {(10000, 5): {}, (10000, 4): {}, (10000, 3): {}}
-        for k in [0, 1, 2]:
+        for k in [0, 1, 2, 3, 4, 5]:
             alpha = alphas[k]
 
             if is_effect_n:
@@ -203,17 +208,17 @@ def consistency(is_centered, alphas, transparency, ref):
 
             ax_.axvline(x=0, ls='--', lw=1.5, c='k')
             ax_.axhline(y=0, ls='--', lw=1.5, c='k')
-            ax_.tick_params(axis='x', labelsize=40)
-            ax_.tick_params(axis='y', labelsize=40)
+            ax_.tick_params(axis='x', labelsize=50)
+            ax_.tick_params(axis='y', labelsize=50)
 
-            if k == 2:
-                ax_.set_xlabel("z-score targeted attack", fontsize=42)
-            if is_effect_n:
-                ax_.set_ylabel("z-score random failure", fontsize=42)
+            if k == 5:
+                ax_.set_xlabel("z-score targeted attack", fontsize=70)
+            if is_effect_n and k == 2:
+                ax_.set_ylabel("z-score random failure", fontsize=70)
 
-            ax_.text(.15, 0.9, r'$\beta=$' + str(alpha),
+            ax_.text(.17, 0.8, r'$\beta=$' + "%.2f" % alpha,
                      horizontalalignment='center',
-                     transform=ax_.transAxes, fontsize=48)
+                     transform=ax_.transAxes, fontsize=55)
 
             sizes = [72, 144, 288]
             sizes = [x * 5 for x in sizes][::-1]
@@ -221,18 +226,19 @@ def consistency(is_centered, alphas, transparency, ref):
             for (n, m) in cases:
                 zscores_attack = {}
                 zscores_random = {}
-                for key in ["random", "random_min_deg", "pa"]:
+                for key in net_list:
                     if key != ref:
-                        zscores_attack[key] = compute_z_score(alpha, key, ref)["static-targeted-attack"][(n, m)]
-                        zscores_random[key] = compute_z_score(alpha, key, ref)["random-failure"][(n, m)]
+                        zscores_attack[key] = compute_z_score(alpha, key, ref)[removal_types[0]][(n, m)]
+                        zscores_random[key] = compute_z_score(alpha, key, ref)[removal_types[1]][(n, m)]
 
-                for net_type in ['random_min_deg', 'random', 'pa']:
+                for net_type in net_list:
                     if net_type != ref:
                         c = "black"
                         x = zscores_attack[net_type]
                         y = zscores_random[net_type]
                         ax_.scatter(x, y, c=c, marker=markers[net_type], label=labels[net_type], s=sizes[i],
                                     alpha=transparency)
+
                 i += 1
             if is_centered:
                 yabs_max = abs(max(ax_.get_ylim(), key=abs))
@@ -241,20 +247,21 @@ def consistency(is_centered, alphas, transparency, ref):
                 ax_.set_xlim(xmin=-1.1 * xabs_max, xmax=1.1 * xabs_max)
     lgn = plt.legend(numpoints=1, markerscale=2., loc='lower center', bbox_to_anchor=(0.5, 1), fancybox=True,
                      shadow=True, ncol=4)
+
     handles = lgn.legendHandles[4:8]
-    legend_labels = [labels[x] for x in ["random", "random_min_deg"][::-1]]
+    legend_labels = [labels[x] for x in net_list if x != ref]
     plt.legend(handles=handles, labels=legend_labels, fancybox=True, shadow=True, loc="upper left",
-               bbox_to_anchor=(-0.65, -0.22),
+               bbox_to_anchor=(-1., -0.42),
                ncol=4)
     pad = 16
 
     for a, col in zip(ax[0], [r"Effect of $n$", r"Effect of $k$", ]):
         a.annotate(col, xy=(0.5, 1), xytext=(0, pad),
                    xycoords='axes fraction', textcoords='offset points',
-                   size=45, ha='center', va='baseline')
+                   size=60, ha='center', va='baseline')
 
-    f.suptitle(r"Reference is $\textsf{PA}(n, k)$", fontsize=50, y=0.995)
-    plt.subplots_adjust(left=0.1, right=0.98, top=0.93, bottom=0.11)
+    f.suptitle(r"Reference is $\textsf{PA}(n,k)$", fontsize=60, y=0.995)
+    plt.subplots_adjust(left=0.12, right=0.98, top=0.92, bottom=0.12)
     f.savefig("results/figs/zscores.pdf", format="pdf")
     plt.close()
 

@@ -171,28 +171,6 @@ def generate_data():
         pickle.dump(res_graphs, graphs_file)
 
 
-def generate_figures():
-    from engine.utils.visualize import experiment, consistency, near_optimal_consistency, adaptive_sensetivity
-    mkdir_(os.getcwd() + "/results/figs/")
-    experiment(10000, 3, [0.05, 0.1, 0.2])
-    experiment(10000, 3, [0.25, 0.3, 0.4])
-    consistency(is_centered=True, transparency=0.8, alphas=[0.05, 0.10, 0.20, 0.25, 0.3, 0.4], ref="pa")
-    near_optimal_consistency([1000, 10000, 20000],  [3, 4, 5])
-    adaptive_sensetivity([1000, 10000, 20000], [3, 4, 5])
-
-
-def generate_tables():
-    import warnings
-    from engine.utils.tables import generate_table_1, generate_table_2
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        mkdir_(os.getcwd() + "/results/tables/")
-        generate_table_1()
-        generate_table_2()
-
-
 if __name__ == '__main__':
-    #generate_data()
-    generate_figures()
-    generate_tables()
+    generate_data()
 
