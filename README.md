@@ -3,7 +3,7 @@
 **Authors**: Rouzbeh Hasheminezhad and Ulrik Brandes
 
 The preliminary version of the paper is available [**here**](https://doi.org/10.1007/978-3-031-21131-7_35).
-## Setup 
+## Setup (currently only available for GNU/Linux|MacOS)
 Confirm that a [LaTeX ](https://www.latex-project.org/get/) distribution is installed, incorporating the [amssymb](https://mirror.las.iastate.edu/tex-archive/fonts/amsfonts/doc/amssymb.pdf) and [amsmath](https://mirror.las.iastate.edu/tex-archive/macros/latex/required/amsmath/amsldoc.pdf) packages.\
 Clone this GitHub repository. If `conda` is not already installed, download and install [Miniconda](https://docs.conda.io/en/latest/miniconda.html#).\
 The following command creates a `conda` environment that includes required dependencies.
