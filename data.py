@@ -16,6 +16,7 @@ def gen_dir():
         n, k = arg[0], arg[1]
         mkdir(base_dir + "/" + str(n))
         mkdir(base_dir + str(n) + "/" + str(k))
+        mkdir(base_dir + str(n) + "/" + str(k) + "/" + "ua")
         mkdir(base_dir + str(n) + "/" + str(k) + "/" + "pa")
         mkdir(base_dir + str(n) + "/" + str(k) + "/" + "random")
         mkdir(base_dir + str(n) + "/" + str(k) + "/" + "random_min_deg")
@@ -38,12 +39,16 @@ def generate_data():
     # --------------------------------------------------------------------------------
     # graph generation
     # --------------------------------------------------------------------------------
+    args_ua = []
     args_pa = []
     args_random = []
     args_random_min_deg = []
     seeds = np.random.RandomState(get_seed()).choice(10000000, get_num_sampled_graphs())
     for (n, k) in get_param_list():
         base_dir = get_working_dir() + "data/" + str(n) + "/" + str(k) + "/"
+        args_ua.extend(
+            [(base_dir + "ua" + "/" + str(i), n, k, seeds[i]) for i in
+             range(get_num_sampled_graphs())])
         args_pa.extend(
             [(base_dir + "pa" + "/" + str(i), n, k, seeds[i]) for i in
              range(get_num_sampled_graphs())])
@@ -57,6 +62,16 @@ def generate_data():
              for
              i in
              range(get_num_sampled_graphs())])
+
+    set_logger("ua.log")
+    logging.info("The format is: n (number of vertices), k (minimum degree), seed (random seed)")
+    results = process_map(generate_ua, args_ua, max_workers=n_engines, desc="ua", chunksize=1)
+    for (exit_code, n, k, seed) in results:
+        if exit_code == 0:
+            logging.info("Finished the generation of: %s", (n, k, seed))
+        else:
+            logging.error("Failed in the generation of: %s", (n, k, seed))
+    reset_logger()
 
     set_logger("pa.log")
     logging.info("The format is: n (number of vertices), k (minimum degree), seed (random seed)")
@@ -96,7 +111,7 @@ def generate_data():
     # score computation
     # --------------------------------------------------------------------------------
     for (n, k) in get_param_list():
-        for graph_type in ["pa", "random", "random_min_deg"]:
+        for graph_type in ["ua", "pa", "random", "random_min_deg"]:
             assert len(os.listdir(
                 get_working_dir() + "data/" + str(n) + "/" + str(k) + "/" + graph_type)) == get_num_sampled_graphs()
 
@@ -114,13 +129,14 @@ def generate_data():
         for (n, k) in get_param_list():
             mkdir(path_prefix + str(n))
             mkdir(path_prefix + str(n) + "/" + str(k))
+            mkdir(path_prefix + str(n) + "/" + str(k) + "/" + "ua")
             mkdir(path_prefix + str(n) + "/" + str(k) + "/" + "pa")
             mkdir(path_prefix + str(n) + "/" + str(k) + "/" + "random")
             mkdir(path_prefix + str(n) + "/" + str(k) + "/" + "random_min_deg")
     args = []
     for (n, k) in get_param_list():
         for i in range(get_num_sampled_graphs()):
-            for graph_type in ["pa", "random", "random_min_deg"]:
+            for graph_type in ["ua", "pa", "random", "random_min_deg"]:
                 read_path = get_working_dir() + "data/" + str(n) + "/" + str(k) + "/" + graph_type + "/" + str(
                     i) + ".gt"
                 write_path_static_attack = score_base_dir + "static-targeted-attack/" + str(n) + "/" + str(
@@ -149,7 +165,7 @@ def generate_data():
     for (n, k) in get_param_list():
         res_scores[(n, k)] = {}
         res_graphs[(n, k)] = {}
-        for graph_type in ["pa", "random", "random_min_deg"]:
+        for graph_type in ["ua", "pa", "random", "random_min_deg"]:
             res_scores[(n, k)][graph_type] = {}
             res_graphs[(n, k)][graph_type] = {}
             for i in range(get_num_sampled_graphs()):

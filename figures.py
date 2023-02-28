@@ -6,7 +6,8 @@ def generate_figures():
     mkdir_(os.getcwd() + "/results/figs/")
     experiment(10000, 3, [0.05, 0.1, 0.2])
     experiment(10000, 3, [0.25, 0.3, 0.4])
-    consistency(is_centered=True, transparency=0.8, alphas=[0.05, 0.10, 0.20, 0.25, 0.3, 0.4], ref="pa")
+    consistency(is_centered=True, transparency=0.8, alphas=[0.05, 0.10, 0.20, 0.25, 0.3, 0.4], ref="pa", contains_ua=False)
+    consistency(is_centered=True, transparency=0.8, alphas=[0.05, 0.10, 0.20, 0.25, 0.3, 0.4], ref="ua", contains_ua=True)
     near_optimal_consistency([1000, 10000, 20000], [3, 4, 5])
     adaptive_sensetivity([1000, 10000, 20000], [3, 4, 5])
 
